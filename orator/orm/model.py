@@ -1869,9 +1869,10 @@ class Model(object):
         """
         Get a fresh timestamp for the model.
 
-        :return: pendulum.Pendulum
+        :return: pendulum.DateTime
         """
-        return pendulum.utcnow()
+        #BYEzz
+        return pendulum.DateTime.utcnow()
 
     def fresh_timestamp_string(self):
         """
@@ -2588,23 +2589,29 @@ class Model(object):
     def from_datetime(self, value):
         """
         Convert datetime to a storable string.
-        
+
         :param value: The datetime value
         :type value: pendulum.Pendulum or datetime.date or datetime.datetime
 
         :rtype: str
         """
         date_format = self.get_connection().get_query_grammar().get_date_format()
-
-        if isinstance(value, pendulum.Pendulum):
+        # BYEzz
+        if isinstance(value, pendulum.DateTime):
             return value.format(date_format)
 
         if isinstance(value, datetime.date) and not isinstance(
-            value, (datetime.datetime)
+                value, (datetime.datetime)
         ):
-            value = pendulum.date.instance(value)
-
-            return value.format(date_format)
+            # BYEzz
+            try:
+                value = pendulum.date.instance(value)
+                return value.format(date_format)
+            except:
+                try:
+                    return pendulum.instance(value).format(date_format)
+                except:
+                    return str(value)
 
         return pendulum.instance(value).format(date_format)
 
@@ -2612,18 +2619,25 @@ class Model(object):
         """
         Return a timestamp as a datetime.
 
-        :rtype: pendulum.Pendulum or pendulum.Date
+        :rtype: pendulum.DateTime or pendulum.Date
         """
         if isinstance(value, basestring):
             return pendulum.parse(value)
 
         if isinstance(value, (int, float)):
             return pendulum.from_timestamp(value)
-
+        # BYEzz
         if isinstance(value, datetime.date) and not isinstance(
-            value, (datetime.datetime)
+                value, (datetime.datetime)
         ):
-            return pendulum.date.instance(value)
+            try:
+                value = pendulum.date.instance(value)
+                return value.format(date_format)
+            except:
+                try:
+                    return pendulum.instance(value).format(date_format)
+                except:
+                    return str(value)
 
         return pendulum.instance(value)
 
